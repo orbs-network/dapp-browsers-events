@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import Web3 from 'web3';
 import logo from './logo.svg';
 import './App.css';
@@ -7,6 +7,7 @@ import orbsRewardsDistributionContractJSON from './contracts/OrbsRewardsDistribu
 import {AbiItem} from "web3-utils";
 import { Contract } from 'web3-eth-contract';
 import {ORBS_REWARDS_CONTRACT_ADDRESS} from "./config";
+import {logFunction} from "./utils/utils";
 
 function App() {
   const hasEthereum = !!(window as any).ethereum;
@@ -16,9 +17,9 @@ function App() {
       if (hasEthereum) {
         try {
           await (window as any).ethereum.enable();
-          console.log('Enabled !');
+          logFunction('Enabled !');
         } catch (e) {
-          console.log(`Error when eneabling : ${e}`)
+          logFunction(`Error when eneabling : ${e}`)
         }
       }
     }

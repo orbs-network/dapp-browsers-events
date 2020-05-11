@@ -1,7 +1,10 @@
 import React, {useCallback} from 'react';
 import Button from '@material-ui/core/Button';
-import { Grid, Typography } from '@material-ui/core';
+import {CircularProgress, Grid, Typography} from '@material-ui/core';
 import {Contract} from "web3-eth-contract";
+import {logFunction} from "../utils/utils";
+import { useBoolean, useStateful, useNumber } from 'react-hanger';
+
 
 interface IProps {
   hasEthereum?: any;
@@ -10,11 +13,21 @@ interface IProps {
 
 function MainPage(props: IProps) {
   const { hasEthereum, distributionContract } = props;
-
   const ORBS_TDE_ETHEREUM_BLOCK = 7439168;
+  const lowBlock = useNumber(ORBS_TDE_ETHEREUM_BLOCK);
+  const highBlock = useNumber(ORBS_TDE_ETHEREUM_BLOCK + 1);
+  const orbsContractInteractionActive = useBoolean(false);
+  const orbsContractInteractionHasError = useBoolean(false);
+  const orbsContractInteractionMessage = useStateful('');
+  const orbsContractInteractionError = useStateful('');
+
+  const ercContractInteractionActive = useBoolean(false);
+  const ercContractInteractionHasError = useBoolean(false);
+  const ercContractInteractionMessage = useStateful('');
+  const ercContractInteractionError = useStateful('');
 
   const readRewardsDistributionsHistory = useCallback(async () => {
-    console.log('Called')
+    logFunction('Called')
     const options = {
       fromBlock: ORBS_TDE_ETHEREUM_BLOCK,
       toBlock: 'latest',
@@ -22,25 +35,78 @@ function MainPage(props: IProps) {
     };
 
     if (!distributionContract) {
-      console.error('No rewards distribution contract');
+      logFunction('No rewards distribution contract');
       return;
     }
 
-    console.log('Reading');
+    // logFunction('Reading');
 
-    const events = await distributionContract.getPastEvents('RewardDistributed', options);
+    // Reset state
+    orbsContractInteractionActive.setTrue();
+    orbsContractInteractionHasError.setFalse();
+    orbsContractInteractionMessage.setValue('');
+    orbsContractInteractionError.setValue('');
 
-    const readRewards = events.map(log => {
-      return {
-        distributionEvent: log.returnValues.distributionEvent as string,
-        amount: BigInt(log.returnValues.amount),
-        transactionHash: log.transactionHash,
-      };
-    });
+    try {
+      const events = await distributionContract.getPastEvents('RewardDistributed', options);
 
-    console.log(readRewards);
-    return readRewards;
-  }, [distributionContract]);
+      const readRewards = events.map(log => {
+        return {
+          distributionEvent: log.returnValues.distributionEvent as string,
+          amount: log.returnValues.amount.toString(),
+          transactionHash: log.transactionHash,
+        };
+      });
+
+      logFunction('Got rewards' , readRewards.length);
+      orbsContractInteractionMessage.setValue(`Got ${JSON.stringify(readRewards)}`)
+      return readRewards;
+    } catch (e) {
+      logFunction('error', e);
+      orbsContractInteractionHasError.setTrue();
+      orbsContractInteractionError.setValue(e.message);
+      return [];
+    } finally {
+      orbsContractInteractionActive.setFalse();
+    }
+  }, [distributionContract, orbsContractInteractionActive]);
+
+
+
+  const readErc20Events = useCallback(async () => {
+    logFunction('Called erc')
+
+    if (!distributionContract) {
+      logFunction('No erc contract');
+      return;
+    }
+
+    // Reset state
+    ercContractInteractionActive.setTrue();
+    ercContractInteractionHasError.setFalse();
+    ercContractInteractionMessage.setValue('');
+    ercContractInteractionError.setValue('');
+
+    try {
+      // const events = await distributionContract.getPastEvents('RewardDistributed', options);
+
+      // const readRewards = events.map(log => {
+      //   return {
+      //     distributionEvent: log.returnValues.distributionEvent as string,
+      //     amount: BigInt(log.returnValues.amount),
+      //     transactionHash: log.transactionHash,
+      //   };
+      // });
+
+      // logFunction('Got rewards' , readRewards.length);
+      return [];
+    } catch (e) {
+      logFunction('error', e);
+      return [];
+    } finally {
+      ercContractInteractionActive.setFalse();
+    }
+  }, [distributionContract, ercContractInteractionActive]);
 
   if (!hasEthereum) {
     return <div>
@@ -51,17 +117,34 @@ function MainPage(props: IProps) {
   return (
     <div>
       <Grid container direction={'column'} spacing={2}>
+        {/* Titles */}
         <Grid item>
           <Typography variant={'h3'}>
             Events reading tests
           </Typography>
-        </Grid>
-        <Grid item>
-          <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} variant={"outlined"} >Read older events - ERC 20 contract</Button>
+          <Typography variant={'h4'}>
+            {lowBlock.value} - {highBlock.value}
+          </Typography>
         </Grid>
 
+        {/* Erc 20 contract*/}
+        <Grid item>
+          <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} variant={"outlined"} onClick={readErc20Events}>Read older events - ERC 20 contract</Button>
+        </Grid>
+        {ercContractInteractionActive.value && <CircularProgress />}
+        <Grid item>
+          {(!ercContractInteractionActive.value) && (<Typography>{ercContractInteractionMessage.value}</Typography>)}
+          {(!ercContractInteractionActive.value && ercContractInteractionHasError.value) && (<Typography color={'error'}>{ercContractInteractionError.value}</Typography>)}
+        </Grid>
+
+        {/* Orbs Contract */}
         <Grid item>
           <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} variant={"outlined"} onClick={readRewardsDistributionsHistory}>Read older events - Orbs contract</Button>
+        </Grid>
+        {orbsContractInteractionActive.value && <CircularProgress />}
+        <Grid item>
+          {(!orbsContractInteractionActive.value) && (<Typography>{orbsContractInteractionMessage.value}</Typography>)}
+          {(!orbsContractInteractionActive.value && orbsContractInteractionHasError.value) && (<Typography color={'error'}>{orbsContractInteractionError.value}</Typography>)}
         </Grid>
       </Grid>
     </div>
