@@ -9,13 +9,14 @@ import { useBoolean, useStateful, useNumber } from 'react-hanger';
 interface IProps {
   hasEthereum?: any;
   distributionContract?: Contract;
+  ercContract?: Contract;
 }
 
 function MainPage(props: IProps) {
-  const { hasEthereum, distributionContract } = props;
+  const { hasEthereum, distributionContract, ercContract } = props;
   const ORBS_TDE_ETHEREUM_BLOCK = 7439168;
   const lowBlock = useNumber(ORBS_TDE_ETHEREUM_BLOCK);
-  const highBlock = useNumber(ORBS_TDE_ETHEREUM_BLOCK + 1);
+  const highBlock = useNumber(ORBS_TDE_ETHEREUM_BLOCK + 10);
   const orbsContractInteractionActive = useBoolean(false);
   const orbsContractInteractionHasError = useBoolean(false);
   const orbsContractInteractionMessage = useStateful('');
@@ -29,7 +30,8 @@ function MainPage(props: IProps) {
   const readRewardsDistributionsHistory = useCallback(async () => {
     // logFunction('Called')
     const options = {
-      fromBlock: ORBS_TDE_ETHEREUM_BLOCK,
+      fromBlock: lowBlock.value,
+      // toBlock: highBlock.value,
       toBlock: 'latest',
       filter: { recipient: '0xC5e624d6824e626a6f14457810E794E4603CFee2' },
     };
@@ -58,8 +60,9 @@ function MainPage(props: IProps) {
         };
       });
 
-      logFunction('Got rewards' , readRewards.length);
-      orbsContractInteractionMessage.setValue(`Got ${JSON.stringify(readRewards)}`)
+      // logFunction('Got rewards' , readRewards.length);
+      // orbsContractInteractionMessage.setValue(`Got ${JSON.stringify(readRewards)}`)
+      orbsContractInteractionMessage.setValue(`Got ${readRewards.length} ORBS rewards events`);
       return readRewards;
     } catch (e) {
       // logFunction('error', e);
@@ -69,14 +72,14 @@ function MainPage(props: IProps) {
     } finally {
       orbsContractInteractionActive.setFalse();
     }
-  }, [distributionContract, orbsContractInteractionActive]);
+  }, [distributionContract, orbsContractInteractionActive, lowBlock, highBlock]);
 
 
 
   const readErc20Events = useCallback(async () => {
     // logFunction('Called erc')
 
-    if (!distributionContract) {
+    if (!ercContract) {
       logFunction('No erc contract');
       return;
     }
@@ -87,8 +90,15 @@ function MainPage(props: IProps) {
     ercContractInteractionMessage.setValue('');
     ercContractInteractionError.setValue('');
 
+    const options = {
+      fromBlock: lowBlock.value,
+      // toBlock: highBlock.value,
+      toBlock: 'latest',
+      // filter: { recipient: '0xC5e624d6824e626a6f14457810E794E4603CFee2' },
+    };
+
     try {
-      // const events = await distributionContract.getPastEvents('RewardDistributed', options);
+      const events = await ercContract.getPastEvents('Transfer', options);
 
       // const readRewards = events.map(log => {
       //   return {
@@ -99,17 +109,18 @@ function MainPage(props: IProps) {
       // });
 
       // logFunction('Got rewards' , readRewards.length);
-      ercContractInteractionMessage.setValue('Done')
+      // ercContractInteractionMessage.setValue(JSON.stringify(events.slice(0, 2)))
+      ercContractInteractionMessage.setValue(`Got ${events.length} erc20 Transfer events`)
       return [];
     } catch (e) {
       // logFunction('error', e);
       ercContractInteractionHasError.setTrue();
-      ercContractInteractionMessage.setValue(e.message);
+      ercContractInteractionError.setValue(e.message);
       return [];
     } finally {
       ercContractInteractionActive.setFalse();
     }
-  }, [distributionContract, ercContractInteractionActive]);
+  }, [distributionContract, ercContractInteractionActive, lowBlock, highBlock]);
 
   if (!hasEthereum) {
     return <div>
@@ -153,6 +164,7 @@ function MainPage(props: IProps) {
           {(!orbsContractInteractionActive.value) && (<Typography>{orbsContractInteractionMessage.value}</Typography>)}
           {(!orbsContractInteractionActive.value && orbsContractInteractionHasError.value) && (<Typography color={'error'}>{orbsContractInteractionError.value}</Typography>)}
         </Grid>
+        Version 0.2.2
       </Grid>
     </div>
 );

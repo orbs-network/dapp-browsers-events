@@ -4,9 +4,10 @@ import logo from './logo.svg';
 import './App.css';
 import MainPage from './pages/MainPage';
 import orbsRewardsDistributionContractJSON from './contracts/OrbsRewardsDistribution.json';
+import thetherContractJSON from './contracts/ThetherErc20Contract.json';
 import {AbiItem} from "web3-utils";
 import { Contract } from 'web3-eth-contract';
-import {ORBS_REWARDS_CONTRACT_ADDRESS} from "./config";
+import {ORBS_REWARDS_CONTRACT_ADDRESS, THETHER_CONTRACT_ADDRESS} from "./config";
 import {logFunction} from "./utils/utils";
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
       if (hasEthereum) {
         try {
           await (window as any).ethereum.enable();
-          logFunction('Enabled !');
+          console.log('Enabled !');
         } catch (e) {
           logFunction(`Error when eneabling : ${e}`)
         }
@@ -50,11 +51,24 @@ function App() {
     return distributionContract;
 
   }, [hasEthereum, web3]);
+  const erc20Contract = useMemo<Contract|undefined>(() => {
+    if (!hasEthereum || ! web3) {
+      return undefined;
+    }
+
+    const distributionContract = new web3.eth.Contract(
+      thetherContractJSON.abi as AbiItem[],
+      THETHER_CONTRACT_ADDRESS
+    );
+
+    return distributionContract;
+
+  }, [hasEthereum, web3]);
 
   return (
     <div className="App">
       <header className="App-header">
-        <MainPage hasEthereum={hasEthereum} distributionContract={orbsRewardsDistributionContract}/>
+        <MainPage hasEthereum={hasEthereum} distributionContract={orbsRewardsDistributionContract} ercContract={erc20Contract}/>
       </header>
     </div>
   );
