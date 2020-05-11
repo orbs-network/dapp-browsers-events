@@ -27,7 +27,7 @@ function MainPage(props: IProps) {
   const ercContractInteractionError = useStateful('');
 
   const readRewardsDistributionsHistory = useCallback(async () => {
-    logFunction('Called')
+    // logFunction('Called')
     const options = {
       fromBlock: ORBS_TDE_ETHEREUM_BLOCK,
       toBlock: 'latest',
@@ -62,7 +62,7 @@ function MainPage(props: IProps) {
       orbsContractInteractionMessage.setValue(`Got ${JSON.stringify(readRewards)}`)
       return readRewards;
     } catch (e) {
-      logFunction('error', e);
+      // logFunction('error', e);
       orbsContractInteractionHasError.setTrue();
       orbsContractInteractionError.setValue(e.message);
       return [];
@@ -74,7 +74,7 @@ function MainPage(props: IProps) {
 
 
   const readErc20Events = useCallback(async () => {
-    logFunction('Called erc')
+    // logFunction('Called erc')
 
     if (!distributionContract) {
       logFunction('No erc contract');
@@ -99,9 +99,12 @@ function MainPage(props: IProps) {
       // });
 
       // logFunction('Got rewards' , readRewards.length);
+      ercContractInteractionMessage.setValue('Done')
       return [];
     } catch (e) {
-      logFunction('error', e);
+      // logFunction('error', e);
+      ercContractInteractionHasError.setTrue();
+      ercContractInteractionMessage.setValue(e.message);
       return [];
     } finally {
       ercContractInteractionActive.setFalse();
@@ -131,7 +134,9 @@ function MainPage(props: IProps) {
         <Grid item>
           <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} variant={"outlined"} onClick={readErc20Events}>Read older events - ERC 20 contract</Button>
         </Grid>
+        <Grid item>
         {ercContractInteractionActive.value && <CircularProgress />}
+        </Grid>
         <Grid item>
           {(!ercContractInteractionActive.value) && (<Typography>{ercContractInteractionMessage.value}</Typography>)}
           {(!ercContractInteractionActive.value && ercContractInteractionHasError.value) && (<Typography color={'error'}>{ercContractInteractionError.value}</Typography>)}
@@ -141,7 +146,9 @@ function MainPage(props: IProps) {
         <Grid item>
           <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} variant={"outlined"} onClick={readRewardsDistributionsHistory}>Read older events - Orbs contract</Button>
         </Grid>
-        {orbsContractInteractionActive.value && <CircularProgress />}
+        <Grid item>
+          {orbsContractInteractionActive.value && <CircularProgress />}
+        </Grid>
         <Grid item>
           {(!orbsContractInteractionActive.value) && (<Typography>{orbsContractInteractionMessage.value}</Typography>)}
           {(!orbsContractInteractionActive.value && orbsContractInteractionHasError.value) && (<Typography color={'error'}>{orbsContractInteractionError.value}</Typography>)}
