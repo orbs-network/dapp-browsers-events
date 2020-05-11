@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/dapp-browsers-events/static/css/main.5f361e03.chunk.css",
-    "main.js": "/dapp-browsers-events/static/js/main.c8e4f5b7.chunk.js",
-    "main.js.map": "/dapp-browsers-events/static/js/main.c8e4f5b7.chunk.js.map",
+    "main.js": "/dapp-browsers-events/static/js/main.cdf2ff3d.chunk.js",
+    "main.js.map": "/dapp-browsers-events/static/js/main.cdf2ff3d.chunk.js.map",
     "runtime-main.js": "/dapp-browsers-events/static/js/runtime-main.d40efc31.js",
     "runtime-main.js.map": "/dapp-browsers-events/static/js/runtime-main.d40efc31.js.map",
     "static/js/2.51cbd586.chunk.js": "/dapp-browsers-events/static/js/2.51cbd586.chunk.js",
     "static/js/2.51cbd586.chunk.js.map": "/dapp-browsers-events/static/js/2.51cbd586.chunk.js.map",
     "index.html": "/dapp-browsers-events/index.html",
-    "precache-manifest.048c7b6fcc5da4b5e612b89ef43248e4.js": "/dapp-browsers-events/precache-manifest.048c7b6fcc5da4b5e612b89ef43248e4.js",
+    "precache-manifest.bd2419b10e802bcf99a98ec4d8a1ed10.js": "/dapp-browsers-events/precache-manifest.bd2419b10e802bcf99a98ec4d8a1ed10.js",
     "service-worker.js": "/dapp-browsers-events/service-worker.js",
     "static/css/main.5f361e03.chunk.css.map": "/dapp-browsers-events/static/css/main.5f361e03.chunk.css.map",
     "static/js/2.51cbd586.chunk.js.LICENSE.txt": "/dapp-browsers-events/static/js/2.51cbd586.chunk.js.LICENSE.txt"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.d40efc31.js",
     "static/js/2.51cbd586.chunk.js",
     "static/css/main.5f361e03.chunk.css",
-    "static/js/main.c8e4f5b7.chunk.js"
+    "static/js/main.cdf2ff3d.chunk.js"
   ]
 }
