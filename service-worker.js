@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/dapp-browsers-events/precache-manifest.564a7866dfce62ea35269e7f9f6715a1.js"
+  "/dapp-browsers-events/precache-manifest.d7422a2ffdb1600f407873d6bafdbfd9.js"
 );
 
 self.addEventListener('message', (event) => {
