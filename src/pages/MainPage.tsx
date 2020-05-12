@@ -148,7 +148,7 @@ function MainPage(props: IProps) {
   const blocksRangeSize = highBlock.value - lowBlock.value;
 
   return (
-    <div>
+    <div style={{ margin: '0.5em'}}>
       <Grid container direction={'column'} spacing={2}>
         {/* Titles */}
         <Grid item>
@@ -212,7 +212,7 @@ function MainPage(props: IProps) {
 
         {/* Erc 20 contract*/}
         <Grid item>
-          <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} variant={"outlined"} onClick={readErc20Events}>Read older events - ERC 20 contract</Button>
+          <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} variant={"outlined"} onClick={readErc20Events}>Read past events - Thether</Button>
         </Grid>
         <Grid item>
         {ercContractInteractionActive.value && <CircularProgress />}
@@ -224,7 +224,7 @@ function MainPage(props: IProps) {
 
         {/* Orbs Contract */}
         <Grid item>
-          <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} variant={"outlined"} onClick={readRewardsDistributionsHistory}>Read older events - Orbs contract</Button>
+          <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} variant={"outlined"} onClick={readRewardsDistributionsHistory}>Read past events - Orbs rewards</Button>
         </Grid>
         <Grid item>
           {orbsContractInteractionActive.value && <CircularProgress />}
