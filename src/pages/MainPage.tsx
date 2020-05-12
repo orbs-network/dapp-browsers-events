@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect} from 'react';
 import Button from '@material-ui/core/Button';
-import {CircularProgress, Grid, Input, Typography} from '@material-ui/core';
+import {CircularProgress, Grid, Input, Slider, Typography} from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {Contract} from "web3-eth-contract";
 import {logFunction} from "../utils/utils";
@@ -31,7 +31,7 @@ function MainPage(props: IProps) {
   const classes = useStyles();
   const { latestBlockNumber, hasEthereum, distributionContract, ercContract } = props;
   const lowBlock = useNumber(ORBS_TDE_ETHEREUM_BLOCK);
-  const highBlock = useStateful<'latest'|number>(latestBlockNumber);
+  const highBlock = useStateful<number>(latestBlockNumber);
   const orbsContractInteractionActive = useBoolean(false);
   const orbsContractInteractionHasError = useBoolean(false);
   const orbsContractInteractionMessage = useStateful('');
@@ -145,6 +145,8 @@ function MainPage(props: IProps) {
     </div>
   }
 
+  const blocksRangeSize = highBlock.value - lowBlock.value;
+
   return (
     <div>
       <Grid container direction={'column'} spacing={2}>
@@ -154,11 +156,14 @@ function MainPage(props: IProps) {
             Events reading tests
           </Typography>
           <Typography variant={'h4'}>
-            {lowBlock.value} - {highBlock.value}
+            {lowBlock.value.toLocaleString()} - {highBlock.value.toLocaleString()}
+          </Typography>
+          <Typography variant={'h5'}>
+            ({blocksRangeSize.toLocaleString()} {blocksRangeSize === 1 ? 'block' : 'blocks' })
           </Typography>
         </Grid>
 
-        {/* Inputs */}
+         {/*Inputs - manual*/}
         <Grid item container justify={'center'} alignItems={'center'}>
           <Grid item>
             <Typography variant={'body1'}>
@@ -172,6 +177,36 @@ function MainPage(props: IProps) {
               High block
             </Typography>
             <Input color={'primary'} type={'number'} value={highBlock.value} onChange={e => highBlock.setValue(parseInt(e.target.value))} inputProps={{ 'aria-label': 'description' }} className={classes.input} />
+          </Grid>
+        </Grid>
+
+        {/* Inputs - Slider */}
+        <Grid item container justify={'center'} alignItems={'center'} direction={'column'}>
+          <Grid item>
+            <Typography variant={'body1'}>
+              Blocks range
+            </Typography>
+          </Grid>
+
+          <Grid item >
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value + 1)}>+1</Button>
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value + 10)}>+10</Button>
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value + 1000)}>+1000</Button>
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value + 10_000)}>+10,000</Button>
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value + 100_000)}>+100,000</Button>
+          </Grid>
+
+          <Grid item style={{ width: 300 }}>
+            <Slider style={{ width: '100%' }} value={[lowBlock.value, highBlock.value]} onChange={((event, value) => {
+              const values = value as number[];
+              lowBlock.setValue(values[0]);
+              highBlock.setValue(values[1]);
+            })}
+                    min={ORBS_TDE_ETHEREUM_BLOCK}
+                    max={latestBlockNumber}
+                    valueLabelDisplay={'auto'}
+            />
+
           </Grid>
         </Grid>
 
@@ -198,7 +233,7 @@ function MainPage(props: IProps) {
           {(!orbsContractInteractionActive.value) && (<Typography>{orbsContractInteractionMessage.value}</Typography>)}
           {(!orbsContractInteractionActive.value && orbsContractInteractionHasError.value) && (<Typography color={'error'}>{orbsContractInteractionError.value}</Typography>)}
         </Grid>
-        Version 0.2.6
+        Version 0.2.8
       </Grid>
     </div>
 );
