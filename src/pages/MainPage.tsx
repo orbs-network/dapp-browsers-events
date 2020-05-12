@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import Button from '@material-ui/core/Button';
 import {CircularProgress, Grid, Input, Typography} from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -6,6 +6,7 @@ import {Contract} from "web3-eth-contract";
 import {logFunction} from "../utils/utils";
 import { useBoolean, useStateful, useNumber } from 'react-hanger';
 import TextField from '@material-ui/core/TextField';
+import {CURRENT_LATEST, ORBS_TDE_ETHEREUM_BLOCK} from "../config";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -20,6 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface IProps {
+  latestBlockNumber: number;
   hasEthereum?: any;
   distributionContract?: Contract;
   ercContract?: Contract;
@@ -27,11 +29,9 @@ interface IProps {
 
 function MainPage(props: IProps) {
   const classes = useStyles();
-  const { hasEthereum, distributionContract, ercContract } = props;
-  const ORBS_TDE_ETHEREUM_BLOCK = 7439168;
-  const CURRENT_LATEST = 10045412;
+  const { latestBlockNumber, hasEthereum, distributionContract, ercContract } = props;
   const lowBlock = useNumber(ORBS_TDE_ETHEREUM_BLOCK);
-  const highBlock = useStateful<'latest'|number>(CURRENT_LATEST);
+  const highBlock = useStateful<'latest'|number>(latestBlockNumber);
   const orbsContractInteractionActive = useBoolean(false);
   const orbsContractInteractionHasError = useBoolean(false);
   const orbsContractInteractionMessage = useStateful('');
@@ -42,6 +42,9 @@ function MainPage(props: IProps) {
   const ercContractInteractionMessage = useStateful('');
   const ercContractInteractionError = useStateful('');
 
+  useEffect(() => {
+    highBlock.setValue(latestBlockNumber);
+  }, [latestBlockNumber])
   const readRewardsDistributionsHistory = useCallback(async () => {
     // logFunction('Called')
     const options = {
@@ -88,7 +91,6 @@ function MainPage(props: IProps) {
       orbsContractInteractionActive.setFalse();
     }
   }, [distributionContract, orbsContractInteractionActive, lowBlock, highBlock]);
-
 
 
   const readErc20Events = useCallback(async () => {
@@ -162,14 +164,14 @@ function MainPage(props: IProps) {
             <Typography variant={'body1'}>
               Low block
             </Typography>
-            <Input color={'primary'} type={'number'} value={lowBlock.value} defaultValue={lowBlock.value} onChange={e => lowBlock.setValue(parseInt(e.target.value))} inputProps={{ 'aria-label': 'description' }} className={classes.input} />
+            <Input color={'primary'} type={'number'} value={lowBlock.value} onChange={e => lowBlock.setValue(parseInt(e.target.value))} inputProps={{ 'aria-label': 'description' }} className={classes.input} />
           </Grid>
 
           <Grid item>
             <Typography variant={'body1'}>
               High block
             </Typography>
-            <Input color={'primary'} type={'number'} value={highBlock.value} defaultValue={highBlock.value} onChange={e => highBlock.setValue(parseInt(e.target.value))} inputProps={{ 'aria-label': 'description' }} className={classes.input} />
+            <Input color={'primary'} type={'number'} value={highBlock.value} onChange={e => highBlock.setValue(parseInt(e.target.value))} inputProps={{ 'aria-label': 'description' }} className={classes.input} />
           </Grid>
         </Grid>
 
