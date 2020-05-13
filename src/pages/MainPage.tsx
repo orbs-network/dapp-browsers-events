@@ -189,11 +189,12 @@ function MainPage(props: IProps) {
           </Grid>
 
           <Grid item >
-            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value + 1)}>+1</Button>
-            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value + 10)}>+10</Button>
-            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value + 1000)}>+1000</Button>
-            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value + 10_000)}>+10,000</Button>
-            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value + 100_000)}>+100,000</Button>
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(lowBlock.value)}>0</Button>
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(highBlock.value + 1)}>+1</Button>
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(highBlock.value + 10)}>+10</Button>
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(highBlock.value + 1000)}>+1000</Button>
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(highBlock.value + 10_000)}>+10,000</Button>
+            <Button style={{ color: '#ffffff', borderColor: '#ffffff' }} onClick={() => highBlock.setValue(highBlock.value + 100_000)}>+100,000</Button>
           </Grid>
 
           <Grid item style={{ width: 300 }}>
@@ -233,7 +234,7 @@ function MainPage(props: IProps) {
           {(!orbsContractInteractionActive.value) && (<Typography>{orbsContractInteractionMessage.value}</Typography>)}
           {(!orbsContractInteractionActive.value && orbsContractInteractionHasError.value) && (<Typography color={'error'}>{orbsContractInteractionError.value}</Typography>)}
         </Grid>
-        Version 0.2.8
+        Version 0.2.9
       </Grid>
     </div>
 );
