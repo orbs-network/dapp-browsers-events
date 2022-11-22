@@ -16,7 +16,7 @@
     "react-device-detect": "^1.12.1",
     "react-dom": "^16.13.1",
     "react-hanger": "^2.2.1",
-    "react-scripts": "3.4.1",
+    "react-scripts": "5.0.1",
     "typescript": "~3.7.2",
     "web3": "^1.2.7",
     "web3-eth-contract": "^1.2.7",
